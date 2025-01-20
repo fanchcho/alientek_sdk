@@ -1,0 +1,8 @@
+prebuilts/gcc/gcc-arm-9.2-2019.12-aarch64-arm-none-linux-gnueabihf/libexec/gcc/arm-none-linux-gnueabihf/9.2.1/cc1plus filter=lfs diff=lfs merge=lfs -text
+prebuilts/gcc/gcc-arm-9.2-2019.12-aarch64-arm-none-linux-gnueabihf/libexec/gcc/arm-none-linux-gnueabihf/9.2.1/cc1 filter=lfs diff=lfs merge=lfs -text
+prebuilts/gcc/gcc-arm-9.2-2019.12-aarch64-arm-none-linux-gnueabihf/libexec/gcc/arm-none-linux-gnueabihf/9.2.1/lto1 filter=lfs diff=lfs merge=lfs -text
+prebuilts/gcc/gcc-arm-9.2-2019.12-aarch64-arm-none-linux-gnueabihf/libexec/gcc/arm-none-linux-gnueabihf/9.2.1/f951 filter=lfs diff=lfs merge=lfs -text
+prebuilts/gcc/gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf/libexec/gcc/arm-none-linux-gnueabihf/9.2.1/cc1plus filter=lfs diff=lfs merge=lfs -text
+prebuilts/gcc/gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf/libexec/gcc/arm-none-linux-gnueabihf/9.2.1/cc1 filter=lfs diff=lfs merge=lfs -text
+prebuilts/gcc/gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf/libexec/gcc/arm-none-linux-gnueabihf/9.2.1/lto1 filter=lfs diff=lfs merge=lfs -text
+prebuilts/gcc/gcc-arm-9.2-2019.12-x86_64-arm-none-linux-gnueabihf/libexec/gcc/arm-none-linux-gnueabihf/9.2.1/f951 filter=lfs diff=lfs merge=lfs -text
