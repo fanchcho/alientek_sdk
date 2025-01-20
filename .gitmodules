@@ -6,3 +6,7 @@
 	path = uboot
 	url = http://gogs.freevegan.site/linux/uboot_5.4.70_2.3.0.git
 	branch = main
+[submodule "buildroot"]
+	path = buildroot
+	url = http://gogs.freevegan.site/linux/buildroot-2022.08.1.git
+	branch = main
