@@ -1,0 +1,1 @@
+imx6ull/BoardConfig-imx6ull-fcc-emmc.mk
