@@ -580,7 +580,7 @@ function build_rootfs(){
 
 	ln -rsf $IMX_ROOTFS_DIR/$ROOTFS_IMG $IMX_ROOTFS_IMG
 
-	cp buildroot/output/imx6ullevk/images/rootfs.ext2 /mnt/hgfs/share/rootfs.img
+	cp buildroot/output/alientek_imx6ull/images/rootfs.ext2 /mnt/hgfs/share/rootfs.img
 	finish_build
 }
 

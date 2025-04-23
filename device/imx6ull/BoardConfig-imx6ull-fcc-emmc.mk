@@ -21,7 +21,7 @@ export IMX_KERNEL_FIT_ITS=boot.its
 # parameter for GPT table
 export IMX_PARAMETER=parameter-buildroot-fit.txt
 # Buildroot config
-export IMX_CFG_BUILDROOT=imx6ullevk
+export IMX_CFG_BUILDROOT=alientek_imx6ull
 # Recovery config
 export IMX_CFG_RECOVERY=imx6ull_recovery
 # Recovery image format type: fit(flattened image tree)
