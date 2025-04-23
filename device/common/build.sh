@@ -170,12 +170,6 @@ function usagerootfs()
 	fi
 
 	case "${IMX_ROOTFS_SYSTEM:-buildroot}" in
-		yocto)
-			;;
-		debian)
-			;;
-		distro)
-			;;
 		*)
 			echo "make"
 			;;
@@ -223,9 +217,6 @@ function usage()
 	echo "buildroot          -build buildroot rootfs"
 	echo "ramboot            -build ramboot image"
 	echo "multi-npu_boot     -build boot image for multi-npu board"
-	echo "yocto              -build yocto rootfs"
-	echo "debian             -build debian10 buster/x11 rootfs"
-	echo "distro             -build debian10 buster/wayland rootfs"
 	echo "pcba               -build pcba"
 	echo "recovery           -build recovery"
 	echo "all                -build uboot, kernel, rootfs, recovery image"
@@ -563,57 +554,6 @@ function build_multi-npu_boot(){
 	finish_build
 }
 
-function build_yocto(){
-	check_config IMX_YOCTO_MACHINE || return 0
-
-	echo "=========Start building ramboot========="
-	echo "TARGET_MACHINE=$IMX_YOCTO_MACHINE"
-	echo "====================================="
-
-	cd yocto
-	ln -sf $IMX_YOCTO_MACHINE.conf build/conf/local.conf
-	source oe-init-build-env
-	LANG=en_US.UTF-8 LANGUAGE=en_US.en LC_ALL=en_US.UTF-8 \
-		bitbake core-image-minimal -r conf/include/rksdk.conf
-
-	finish_build
-}
-
-function build_debian(){
-	ARCH=${IMX_DEBIAN_ARCH:-${IMX_ARCH}}
-	case $ARCH in
-		arm|armhf) ARCH=armhf ;;
-		*) ARCH=arm64 ;;
-	esac
-
-	echo "=========Start building debian for $ARCH========="
-
-	cd debian
-	if [ ! -e linaro-buster-$ARCH.tar.gz ]; then
-		RELEASE=buster TARGET=desktop ARCH=$ARCH ./mk-base-debian.sh
-		ln -rsf linaro-buster-alip-*.tar.gz linaro-buster-$ARCH.tar.gz
-	fi
-
-	VERSION=debug ARCH=$ARCH ./mk-rootfs-buster.sh
-	./mk-image.sh
-
-	finish_build
-}
-
-function build_distro(){
-	check_config IMX_DISTRO_DEFCONFIG || return 0
-
-	echo "===========Start building distro==========="
-	echo "TARGET_ARCH=$IMX_ARCH"
-	echo "IMX_DISTRO_DEFCONFIG=$IMX_DISTRO_DEFCONFIG"
-	echo "========================================"
-
-	cd distro
-	make $IMX_DISTRO_DEFCONFIG
-	/usr/bin/time -f "you take %E to build distro" distro/make.sh
-
-	finish_build
-}
 
 function build_rootfs(){
 	check_config IMX_ROOTFS_IMG || return 0
@@ -625,22 +565,6 @@ function build_rootfs(){
 	mkdir -p ${IMX_ROOTFS_IMG%/*} $IMX_ROOTFS_DIR
 
 	case "$1" in
-		yocto)
-			build_yocto
-			ln -rsf yocto/build/latest/rootfs.img \
-				$IMX_ROOTFS_DIR/rootfs.ext4
-			;;
-		debian)
-			build_debian
-			ln -rsf debian/linaro-rootfs.img \
-				$IMX_ROOTFS_DIR/rootfs.ext4
-			;;
-		distro)
-			build_distro
-			for f in $(ls distro/output/images/rootfs.*);do
-				ln -rsf $f $IMX_ROOTFS_DIR/
-			done
-			;;
 		*)
 			build_buildroot
 			for f in $(ls buildroot/output/$IMX_CFG_BUILDROOT/images/rootfs.*);do
@@ -656,7 +580,7 @@ function build_rootfs(){
 
 	ln -rsf $IMX_ROOTFS_DIR/$ROOTFS_IMG $IMX_ROOTFS_IMG
 
-	cp buildroot/output/rockchip_rk3568/images/rootfs.ext2 /mnt/hgfs/share/rootfs.img
+	cp buildroot/output/imx6ullevk/images/rootfs.ext2 /mnt/hgfs/share/rootfs.img
 	finish_build
 }
 
@@ -749,9 +673,6 @@ function build_cleanall(){
 	make distclean
 	cd -
 	rm -rf buildroot/output
-	rm -rf yocto/build/tmp
-	rm -rf distro/output
-	rm -rf debian/binary
 
 	finish_build
 }
@@ -958,7 +879,7 @@ for option in ${OPTIONS}; do
 		loader) build_loader ;;
 		kernel) build_kernel ;;
 		modules) build_modules ;;
-		rootfs|buildroot|debian|distro|yocto) build_rootfs $option ;;
+		rootfs|buildroot) build_rootfs $option ;;
 		pcba) build_pcba ;;
 		ramboot) build_ramboot ;;
 		recovery) build_recovery ;;

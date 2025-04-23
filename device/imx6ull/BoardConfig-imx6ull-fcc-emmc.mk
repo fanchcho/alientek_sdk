@@ -21,9 +21,9 @@ export IMX_KERNEL_FIT_ITS=boot.its
 # parameter for GPT table
 export IMX_PARAMETER=parameter-buildroot-fit.txt
 # Buildroot config
-export IMX_CFG_BUILDROOT=rockchip_rk3568
+export IMX_CFG_BUILDROOT=imx6ullevk
 # Recovery config
-export IMX_CFG_RECOVERY=rockchip_rk356x_recovery
+export IMX_CFG_RECOVERY=imx6ull_recovery
 # Recovery image format type: fit(flattened image tree)
 export IMX_RECOVERY_FIT_ITS=boot4recovery.its
 # ramboot config
@@ -33,11 +33,9 @@ export IMX_CFG_PCBA=
 # Build jobs
 export IMX_JOBS=12
 # target chip
-export IMX_TARGET_PRODUCT=rk356x
+export IMX_TARGET_PRODUCT=imx6ull
 # Set rootfs type, including ext2 ext4 squashfs
 export IMX_ROOTFS_TYPE=ext4
-# yocto machine
-export IMX_YOCTO_MACHINE=rockchip-rk3568-evb
 # rootfs image path
 export IMX_ROOTFS_IMG=rockdev/rootfs.${IMX_ROOTFS_TYPE}
 # Set ramboot image type
