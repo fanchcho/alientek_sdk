@@ -9,22 +9,22 @@ cd $TOP_DIR
 function unset_board_config_all()
 {
 	local tmp_file=`mktemp`
-	grep -o "^export.*.*=" `find $TOP_DIR/device/rockchip -name "Board*.mk" -type f` -h | sort | uniq > $tmp_file
+	grep -o "^export.*.*=" `find $TOP_DIR/device/imx6ull -name "Board*.mk" -type f` -h | sort | uniq > $tmp_file
 	source $tmp_file
 	rm -f $tmp_file
 }
 unset_board_config_all
 
-source $TOP_DIR/device/rockchip/.BoardConfig.mk
+source $TOP_DIR/device/.BoardConfig.mk
 ROCKDEV=$TOP_DIR/rockdev
-PARAMETER=$TOP_DIR/device/rockchip/$TARGET_PRODUCT/$PARAMETER
+PARAMETER=$TOP_DIR/device/$TARGET_PRODUCT/$PARAMETER
 if [ "${OEM_DIR}x" != "x" ];then
-	OEM_DIR=$TOP_DIR/device/rockchip/oem/$OEM_DIR
+	OEM_DIR=$TOP_DIR/device/oem/$OEM_DIR
 else
 	OEM_DIR=
 fi
-USER_DATA_DIR=$TOP_DIR/device/rockchip/userdata/$USERDATA_DIR
-MISC_IMG=$TOP_DIR/device/rockchip/rockimg/$MISC
+USER_DATA_DIR=$TOP_DIR/device/userdata/$USERDATA_DIR
+MISC_IMG=$TOP_DIR/device/rockimg/$MISC
 ROOTFS_IMG=$TOP_DIR/$ROOTFS_IMG
 ROOTFS_IMG_SOURCE=$TOP_DIR/buildroot/output/$CFG_BUILDROOT/images/rootfs.$ROOTFS_TYPE
 RAMBOOT_IMG=$TOP_DIR/buildroot/output/$CFG_RAMBOOT/images/ramboot.img

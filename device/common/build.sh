@@ -415,7 +415,7 @@ function build_uboot(){
 	echo "========================================="
 
 	cd uboot
-	./make.sh rk3568
+	./make.sh imx6ull
 	cd -
 	
 	finish_build
@@ -471,7 +471,7 @@ function build_kernel(){
 
 	echo -e "\t\n\n === Sign Boot.img === \n\n"
 	cd zlg
-	./sign-apply-rk3568.sh || exit 1
+	./sign-apply-imx6ull.sh || exit 1
 	cp fit/boot-signed.img ../boot.img 
 	cd -
 	cp zlg/fit/boot-signed.img boot.img
