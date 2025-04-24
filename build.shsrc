@@ -2,7 +2,7 @@
 
 export LC_ALL=C
 export LD_LIBRARY_PATH=
-unset RK_CFG_TOOLCHAIN
+unset IMX_CFG_TOOLCHAIN
 
 err_handler() {
 	ret=$?
@@ -132,20 +132,20 @@ function usagekernel()
 
 function usageuboot()
 {
-	check_config RK_UBOOT_DEFCONFIG || return 0
+	check_config IMX_UBOOT_DEFCONFIG || return 0
 	prebuild_uboot
 
 	cd u-boot
 	echo "cd u-boot"
-	if [ -n "$RK_UBOOT_DEFCONFIG_FRAGMENT" ]; then
-		if [ -f "configs/${RK_UBOOT_DEFCONFIG}_defconfig" ]; then
-			echo "make ${RK_UBOOT_DEFCONFIG}_defconfig $RK_UBOOT_DEFCONFIG_FRAGMENT"
+	if [ -n "$IMX_UBOOT_DEFCONFIG_FRAGMENT" ]; then
+		if [ -f "configs/${IMX_UBOOT_DEFCONFIG}_defconfig" ]; then
+			echo "make ${IMX_UBOOT_DEFCONFIG}_defconfig $IMX_UBOOT_DEFCONFIG_FRAGMENT"
 		else
-			echo "make ${RK_UBOOT_DEFCONFIG}.config $RK_UBOOT_DEFCONFIG_FRAGMENT"
+			echo "make ${IMX_UBOOT_DEFCONFIG}.config $IMX_UBOOT_DEFCONFIG_FRAGMENT"
 		fi
 		echo "./make.sh $UBOOT_COMPILE_COMMANDS"
 	else
-		echo "./make.sh $RK_UBOOT_DEFCONFIG $UBOOT_COMPILE_COMMANDS"
+		echo "./make.sh $IMX_UBOOT_DEFCONFIG $UBOOT_COMPILE_COMMANDS"
 	fi
 
 	if [ "$RK_IDBLOCK_UPDATE_SPL" = "true" ]; then
@@ -157,19 +157,19 @@ function usageuboot()
 
 function usagerootfs()
 {
-	check_config RK_ROOTFS_IMG || return 0
+	check_config IMX_ROOTFS_IMG || return 0
 
-	if [ "${RK_CFG_BUILDROOT}x" != "x" ];then
-		echo "source envsetup.sh $RK_CFG_BUILDROOT"
+	if [ "${IMX_CFG_BUILDROOT}x" != "x" ];then
+		echo "source envsetup.sh $IMX_CFG_BUILDROOT"
 	else
-		if [ "${RK_CFG_RAMBOOT}x" != "x" ];then
-			echo "source envsetup.sh $RK_CFG_RAMBOOT"
+		if [ "${IMX_CFG_RAMBOOT}x" != "x" ];then
+			echo "source envsetup.sh $IMX_CFG_RAMBOOT"
 		else
 			echo "Not found config buildroot. Please Check !!!"
 		fi
 	fi
 
-	case "${RK_ROOTFS_SYSTEM:-buildroot}" in
+	case "${IMX_ROOTFS_SYSTEM:-buildroot}" in
 		yocto)
 			;;
 		debian)
@@ -182,18 +182,18 @@ function usagerootfs()
 
 function usagerecovery()
 {
-	check_config RK_CFG_RECOVERY || return 0
+	check_config IMX_CFG_RECOVERY || return 0
 
-	echo "source envsetup.sh $RK_CFG_RECOVERY"
-	echo "$COMMON_DIR/mk-ramdisk.sh recovery.img $RK_CFG_RECOVERY"
+	echo "source envsetup.sh $IMX_CFG_RECOVERY"
+	echo "$COMMON_DIR/mk-ramdisk.sh recovery.img $IMX_CFG_RECOVERY"
 }
 
 function usageramboot()
 {
-	check_config RK_CFG_RAMBOOT || return 0
+	check_config IMX_CFG_RAMBOOT || return 0
 
-	echo "source envsetup.sh $RK_CFG_RAMBOOT"
-	echo "$COMMON_DIR/mk-ramdisk.sh ramboot.img $RK_CFG_RAMBOOT"
+	echo "source envsetup.sh $IMX_CFG_RAMBOOT"
+	echo "$COMMON_DIR/mk-ramdisk.sh ramboot.img $IMX_CFG_RAMBOOT"
 }
 
 function usagemodules()
@@ -367,7 +367,7 @@ function build_check(){
 }
 
 function build_pkg() {
-	check_config RK_CFG_BUILDROOT || check_config RK_CFG_RAMBOOT || check_config RK_CFG_RECOVERY || check_config RK_CFG_PCBA || return 0
+	check_config IMX_CFG_BUILDROOT || check_config IMX_CFG_RAMBOOT || check_config IMX_CFG_RECOVERY || check_config RK_CFG_PCBA || return 0
 
 	local target_pkg=$1
 	target_pkg=${target_pkg%*/}
@@ -394,7 +394,7 @@ function build_pkg() {
 			pkg_config_in=$(dirname $pkg_mk)/Config.in
 			pkg_br=BR2_PACKAGE_$pkg_final_target_upper
 
-			for cfg in RK_CFG_BUILDROOT RK_CFG_RAMBOOT RK_CFG_RECOVERY RK_CFG_PCBA
+			for cfg in IMX_CFG_BUILDROOT IMX_CFG_RAMBOOT IMX_CFG_RECOVERY RK_CFG_PCBA
 			do
 				if eval [ \$$cfg ] ;then
 					pkg_cfg=$( eval "echo \$$cfg" )
@@ -414,11 +414,11 @@ function build_pkg() {
 }
 
 function build_uboot(){
-	check_config RK_UBOOT_DEFCONFIG || return 0
+	check_config IMX_UBOOT_DEFCONFIG || return 0
 	prebuild_uboot
 
 	echo "============Start building uboot============"
-	echo "TARGET_UBOOT_CONFIG=$RK_UBOOT_DEFCONFIG"
+	echo "TARGET_UBOOT_CONFIG=$IMX_UBOOT_DEFCONFIG"
 	echo "========================================="
 
 	cd u-boot
@@ -430,15 +430,15 @@ function build_uboot(){
 		rm -f $TOP_DIR/u-boot/boot.img
 	fi
 
-	if [ -n "$RK_UBOOT_DEFCONFIG_FRAGMENT" ]; then
-		if [ -f "configs/${RK_UBOOT_DEFCONFIG}_defconfig" ]; then
-			make ${RK_UBOOT_DEFCONFIG}_defconfig $RK_UBOOT_DEFCONFIG_FRAGMENT
+	if [ -n "$IMX_UBOOT_DEFCONFIG_FRAGMENT" ]; then
+		if [ -f "configs/${IMX_UBOOT_DEFCONFIG}_defconfig" ]; then
+			make ${IMX_UBOOT_DEFCONFIG}_defconfig $IMX_UBOOT_DEFCONFIG_FRAGMENT
 		else
-			make ${RK_UBOOT_DEFCONFIG}.config $RK_UBOOT_DEFCONFIG_FRAGMENT
+			make ${IMX_UBOOT_DEFCONFIG}.config $IMX_UBOOT_DEFCONFIG_FRAGMENT
 		fi
 		./make.sh $UBOOT_COMPILE_COMMANDS
 	else
-		./make.sh $RK_UBOOT_DEFCONFIG \
+		./make.sh $IMX_UBOOT_DEFCONFIG \
 			$UBOOT_COMPILE_COMMANDS
 	fi
 
@@ -522,10 +522,10 @@ function build_modules(){
 }
 
 function build_toolchain(){
-	check_config RK_CFG_TOOLCHAIN || return 0
+	check_config IMX_CFG_TOOLCHAIN || return 0
 
 	echo "==========Start building toolchain =========="
-	echo "TARGET_TOOLCHAIN_CONFIG=$RK_CFG_TOOLCHAIN"
+	echo "TARGET_TOOLCHAIN_CONFIG=$IMX_CFG_TOOLCHAIN"
 	echo "========================================="
 
 	/usr/bin/time -f "you take %E to build toolchain" \
@@ -535,10 +535,10 @@ function build_toolchain(){
 }
 
 function build_buildroot(){
-	check_config RK_CFG_BUILDROOT || return 0
+	check_config IMX_CFG_BUILDROOT || return 0
 
 	echo "==========Start building buildroot=========="
-	echo "TARGET_BUILDROOT_CONFIG=$RK_CFG_BUILDROOT"
+	echo "TARGET_BUILDROOT_CONFIG=$IMX_CFG_BUILDROOT"
 	echo "========================================="
 
 	/usr/bin/time -f "you take %E to build builroot" \
@@ -548,16 +548,16 @@ function build_buildroot(){
 }
 
 function build_ramboot(){
-	check_config RK_CFG_RAMBOOT || return 0
+	check_config IMX_CFG_RAMBOOT || return 0
 
 	echo "=========Start building ramboot========="
-	echo "TARGET_RAMBOOT_CONFIG=$RK_CFG_RAMBOOT"
+	echo "TARGET_RAMBOOT_CONFIG=$IMX_CFG_RAMBOOT"
 	echo "====================================="
 
 	/usr/bin/time -f "you take %E to build ramboot" \
-		$COMMON_DIR/mk-ramdisk.sh ramboot.img $RK_CFG_RAMBOOT
+		$COMMON_DIR/mk-ramdisk.sh ramboot.img $IMX_CFG_RAMBOOT
 
-	ln -rsf buildroot/output/$RK_CFG_RAMBOOT/images/ramboot.img \
+	ln -rsf buildroot/output/$IMX_CFG_RAMBOOT/images/ramboot.img \
 		rockdev/boot.img
 
 	finish_build
@@ -567,7 +567,7 @@ function build_multi-npu_boot(){
 	check_config RK_MULTINPU_BOOT || return 0
 
 	echo "=========Start building multi-npu boot========="
-	echo "TARGET_RAMBOOT_CONFIG=$RK_CFG_RAMBOOT"
+	echo "TARGET_RAMBOOT_CONFIG=$IMX_CFG_RAMBOOT"
 	echo "====================================="
 
 	/usr/bin/time -f "you take %E to build multi-npu boot" \
@@ -578,18 +578,18 @@ function build_multi-npu_boot(){
 
 
 function build_rootfs(){
-	check_config RK_ROOTFS_IMG || return 0
+	check_config IMX_ROOTFS_IMG || return 0
 
 	RK_ROOTFS_DIR=.rootfs
-	ROOTFS_IMG=${RK_ROOTFS_IMG##*/}
+	ROOTFS_IMG=${IMX_ROOTFS_IMG##*/}
 
-	rm -rf $RK_ROOTFS_IMG $RK_ROOTFS_DIR
-	mkdir -p ${RK_ROOTFS_IMG%/*} $RK_ROOTFS_DIR
+	rm -rf $IMX_ROOTFS_IMG $RK_ROOTFS_DIR
+	mkdir -p ${IMX_ROOTFS_IMG%/*} $RK_ROOTFS_DIR
 
 	case "$1" in
 		*)
 			build_buildroot
-			for f in $(ls buildroot/output/$RK_CFG_BUILDROOT/images/rootfs.*);do
+			for f in $(ls buildroot/output/$IMX_CFG_BUILDROOT/images/rootfs.*);do
 				ln -rsf $f $RK_ROOTFS_DIR/
 			done
 			;;
@@ -600,7 +600,7 @@ function build_rootfs(){
 		exit 1
 	fi
 
-	ln -rsf $RK_ROOTFS_DIR/$ROOTFS_IMG $RK_ROOTFS_IMG
+	ln -rsf $RK_ROOTFS_DIR/$ROOTFS_IMG $IMX_ROOTFS_IMG
 
 	finish_build
 }
@@ -608,17 +608,17 @@ function build_rootfs(){
 function build_recovery(){
 
 	if [ "$RK_UPDATE_SDCARD_ENABLE_FOR_AB" = "true" ] ;then
-		RK_CFG_RECOVERY=$RK_UPDATE_SDCARD_CFG_RECOVERY
+		IMX_CFG_RECOVERY=$RK_UPDATE_SDCARD_CFG_RECOVERY
 	fi
 
-	check_config RK_CFG_RECOVERY || return 0
+	check_config IMX_CFG_RECOVERY || return 0
 
 	echo "==========Start building recovery=========="
-	echo "TARGET_RECOVERY_CONFIG=$RK_CFG_RECOVERY"
+	echo "TARGET_RECOVERY_CONFIG=$IMX_CFG_RECOVERY"
 	echo "========================================"
 
 	/usr/bin/time -f "you take %E to build recovery" \
-		$COMMON_DIR/mk-ramdisk.sh recovery.img $RK_CFG_RECOVERY
+		$COMMON_DIR/mk-ramdisk.sh recovery.img $IMX_CFG_RECOVERY
 
 	finish_build
 }
@@ -640,15 +640,15 @@ function build_all(){
 	echo "============================================"
 	echo "TARGET_ARCH=$RK_ARCH"
 	echo "TARGET_PLATFORM=$RK_TARGET_PRODUCT"
-	echo "TARGET_UBOOT_CONFIG=$RK_UBOOT_DEFCONFIG"
+	echo "TARGET_UBOOT_CONFIG=$IMX_UBOOT_DEFCONFIG"
 	echo "TARGET_SPL_CONFIG=$RK_SPL_DEFCONFIG"
 	echo "TARGET_KERNEL_CONFIG=$RK_KERNEL_DEFCONFIG"
 	echo "TARGET_KERNEL_DTS=$RK_KERNEL_DTS"
-	echo "TARGET_TOOLCHAIN_CONFIG=$RK_CFG_TOOLCHAIN"
-	echo "TARGET_BUILDROOT_CONFIG=$RK_CFG_BUILDROOT"
-	echo "TARGET_RECOVERY_CONFIG=$RK_CFG_RECOVERY"
+	echo "TARGET_TOOLCHAIN_CONFIG=$IMX_CFG_TOOLCHAIN"
+	echo "TARGET_BUILDROOT_CONFIG=$IMX_CFG_BUILDROOT"
+	echo "TARGET_RECOVERY_CONFIG=$IMX_CFG_RECOVERY"
 	echo "TARGET_PCBA_CONFIG=$RK_CFG_PCBA"
-	echo "TARGET_RAMBOOT_CONFIG=$RK_CFG_RAMBOOT"
+	echo "TARGET_RAMBOOT_CONFIG=$IMX_CFG_RAMBOOT"
 	echo "============================================"
 
 	# NOTE: On secure boot-up world, if the images build with fit(flattened image tree)
@@ -667,7 +667,7 @@ function build_all(){
 	build_loader
 	build_kernel
 	build_toolchain
-	build_rootfs ${RK_ROOTFS_SYSTEM:-buildroot}
+	build_rootfs ${IMX_ROOTFS_SYSTEM:-buildroot}
 	build_recovery
 	build_ramboot
 
@@ -830,9 +830,9 @@ function build_save(){
 	cp $IMAGE_PATH/* $STUB_PATH/IMAGES/
 
 	#Save build command info
-	echo "UBOOT:  defconfig: $RK_UBOOT_DEFCONFIG" >> $STUB_PATH/build_cmd_info
+	echo "UBOOT:  defconfig: $IMX_UBOOT_DEFCONFIG" >> $STUB_PATH/build_cmd_info
 	echo "KERNEL: defconfig: $RK_KERNEL_DEFCONFIG, dts: $RK_KERNEL_DTS" >> $STUB_PATH/build_cmd_info
-	echo "BUILDROOT: $RK_CFG_BUILDROOT" >> $STUB_PATH/build_cmd_info
+	echo "BUILDROOT: $IMX_CFG_BUILDROOT" >> $STUB_PATH/build_cmd_info
 
 	finish_build
 }

@@ -9,7 +9,7 @@ cd $TOP_DIR
 function unset_board_config_all()
 {
 	local tmp_file=`mktemp`
-	grep -o "^export.*.*=" `find $TOP_DIR/device/imx6ull -name "Board*.mk" -type f` -h | sort | uniq > $tmp_file
+	grep -o "^export.*RK_.*=" `find $TOP_DIR/device/imx6ull -name "Board*.mk" -type f` -h | sort | uniq > $tmp_file
 	source $tmp_file
 	rm -f $tmp_file
 }
@@ -17,18 +17,18 @@ unset_board_config_all
 
 source $TOP_DIR/device/.BoardConfig.mk
 ROCKDEV=$TOP_DIR/rockdev
-PARAMETER=$TOP_DIR/device/$TARGET_PRODUCT/$PARAMETER
-if [ "${OEM_DIR}x" != "x" ];then
-	OEM_DIR=$TOP_DIR/device/oem/$OEM_DIR
+PARAMETER=$TOP_DIR/device/$IMX_TARGET_PRODUCT/$IMX_PARAMETER
+if [ "${IMX_OEM_DIR}x" != "x" ];then
+	OEM_DIR=$TOP_DIR/device/oem/$IMX_OEM_DIR
 else
 	OEM_DIR=
 fi
-USER_DATA_DIR=$TOP_DIR/device/userdata/$USERDATA_DIR
-MISC_IMG=$TOP_DIR/device/rockimg/$MISC
-ROOTFS_IMG=$TOP_DIR/$ROOTFS_IMG
-ROOTFS_IMG_SOURCE=$TOP_DIR/buildroot/output/$CFG_BUILDROOT/images/rootfs.$ROOTFS_TYPE
-RAMBOOT_IMG=$TOP_DIR/buildroot/output/$CFG_RAMBOOT/images/ramboot.img
-RECOVERY_IMG=$TOP_DIR/buildroot/output/$CFG_RECOVERY/images/recovery.img
+USER_DATA_DIR=$TOP_DIR/device/rockchip/userdata/$IMX_USERDATA_DIR
+MISC_IMG=$TOP_DIR/device/rockchip/rockimg/$IMX_MISC
+ROOTFS_IMG=$TOP_DIR/$IMX_ROOTFS_IMG
+ROOTFS_IMG_SOURCE=$TOP_DIR/buildroot/output/$IMX_CFG_BUILDROOT/images/rootfs.$IMX_ROOTFS_TYPE
+RAMBOOT_IMG=$TOP_DIR/buildroot/output/$IMX_CFG_RAMBOOT/images/ramboot.img
+RECOVERY_IMG=$TOP_DIR/buildroot/output/$IMX_CFG_RECOVERY/images/recovery.img
 if which fakeroot; then
 FAKEROOT_TOOL="`which fakeroot`"
 else
@@ -40,7 +40,7 @@ OEM_FAKEROOT_SCRIPT=$ROCKDEV/oem.fs
 USERDATA_FAKEROOT_SCRIPT=$ROCKDEV/userdata.fs
 TRUST_IMG=$TOP_DIR/u-boot/trust.img
 UBOOT_IMG=$TOP_DIR/u-boot/uboot.img
-BOOT_IMG=$TOP_DIR/kernel/$BOOT_IMG
+BOOT_IMG=$TOP_DIR/kernel/$IMX_BOOT_IMG
 LOADER=$TOP_DIR/u-boot/*_loader_v*.bin
 SPL=$TOP_DIR/u-boot/*_loader_spl.bin
 #SPINOR_LOADER=$TOP_DIR/u-boot/*_loader_spinor_v*.bin
@@ -50,11 +50,11 @@ mkdir -p $ROCKDEV
 # Require buildroot host tools to do image packing.
 if [ ! -d "$TARGET_OUTPUT_DIR" ]; then
     echo "Source buildroot/build/envsetup.sh"
-	if [ "${CFG_RAMBOOT}x" != "x" ];then
-		source $TOP_DIR/buildroot/build/envsetup.sh $CFG_RAMBOOT
+	if [ "${IMX_CFG_RAMBOOT}x" != "x" ];then
+		source $TOP_DIR/buildroot/build/envsetup.sh $IMX_CFG_RAMBOOT
 	fi
-	if [ "${CFG_BUILDROOT}x" != "x" ];then
-		source $TOP_DIR/buildroot/build/envsetup.sh $CFG_BUILDROOT
+	if [ "${IMX_CFG_BUILDROOT}x" != "x" ];then
+		source $TOP_DIR/buildroot/build/envsetup.sh $IMX_CFG_BUILDROOT
 	fi
 fi
 
@@ -167,7 +167,7 @@ check_partition_size() {
 	done
 }
 
-if [ $ROOTFS_IMG ]
+if [ $IMX_ROOTFS_IMG ]
 then
 	if [ -f $ROOTFS_IMG ]
 	then
@@ -195,7 +195,7 @@ fi
 
 get_partition_size
 
-if [ $CFG_RECOVERY ]
+if [ $IMX_CFG_RECOVERY ]
 then
 	if [ -f $RECOVERY_IMG ]
 	then
@@ -207,7 +207,7 @@ then
 	fi
 fi
 
-if [ $MISC ]
+if [ $IMX_MISC ]
 then
 	if [ -f $MISC_IMG ]
 	then
@@ -219,7 +219,7 @@ then
 	fi
 fi
 
-if [ "${OEM_BUILDIN_BUILDROOT}x" != "YESx" ]
+if [ "${IMX_OEM_BUILDIN_BUILDROOT}x" != "YESx" ]
 then
 	if [ -d "$OEM_DIR" ]
 	then
@@ -228,10 +228,10 @@ then
 		if [ -d $OEM_DIR/www ]; then
 			echo "chown -R www-data:www-data $OEM_DIR/www" >> $OEM_FAKEROOT_SCRIPT
 		fi
-		if [ "$OEM_FS_TYPE" = "ubi" ]; then
-			echo "$MKIMAGE $OEM_DIR $ROCKDEV/oem.img $OEM_FS_TYPE ${OEM_PARTITION_SIZE:-$oem_part_size_bytes} oem $UBI_PAGE_SIZE $UBI_BLOCK_SIZE"  >> $OEM_FAKEROOT_SCRIPT
+		if [ "$IMX_OEM_FS_TYPE" = "ubi" ]; then
+			echo "$MKIMAGE $OEM_DIR $ROCKDEV/oem.img $IMX_OEM_FS_TYPE ${IMX_OEM_PARTITION_SIZE:-$oem_part_size_bytes} oem $IMX_UBI_PAGE_SIZE $IMX_UBI_BLOCK_SIZE"  >> $OEM_FAKEROOT_SCRIPT
 		else
-			echo "$MKIMAGE $OEM_DIR $ROCKDEV/oem.img $OEM_FS_TYPE"  >> $OEM_FAKEROOT_SCRIPT
+			echo "$MKIMAGE $OEM_DIR $ROCKDEV/oem.img $IMX_OEM_FS_TYPE"  >> $OEM_FAKEROOT_SCRIPT
 		fi
 		chmod a+x $OEM_FAKEROOT_SCRIPT
 		$FAKEROOT_TOOL -- $OEM_FAKEROOT_SCRIPT
@@ -240,21 +240,21 @@ then
 		echo "warning: $OEM_DIR  not found!"
 	fi
 else
-	if [ -f "$TOP_DIR/buildroot/output/$CFG_BUILDROOT/images/oem.img" ]; then
-		ln -sfr $TOP_DIR/buildroot/output/$CFG_BUILDROOT/images/oem.img $ROCKDEV/oem.img
+	if [ -f "$TOP_DIR/buildroot/output/$IMX_CFG_BUILDROOT/images/oem.img" ]; then
+		ln -sfr $TOP_DIR/buildroot/output/$IMX_CFG_BUILDROOT/images/oem.img $ROCKDEV/oem.img
 	fi
 fi
 
-if [ $USERDATA_DIR ]
+if [ $IMX_USERDATA_DIR ]
 then
 	if [ -d "$USER_DATA_DIR" ]
 	then
 		echo "#!/bin/sh" > $USERDATA_FAKEROOT_SCRIPT
 		echo "set -e" >> $USERDATA_FAKEROOT_SCRIPT
-		if [ "$USERDATA_FS_TYPE" = "ubi" ]; then
-			echo "$MKIMAGE $USER_DATA_DIR $ROCKDEV/userdata.img $USERDATA_FS_TYPE $USERDATA_PARTITION_SIZE userdata $UBI_PAGE_SIZE $UBI_BLOCK_SIZE"  >> $USERDATA_FAKEROOT_SCRIPT
+		if [ "$IMX_USERDATA_FS_TYPE" = "ubi" ]; then
+			echo "$MKIMAGE $USER_DATA_DIR $ROCKDEV/userdata.img $IMX_USERDATA_FS_TYPE $IMX_USERDATA_PARTITION_SIZE userdata $IMX_UBI_PAGE_SIZE $IMX_UBI_BLOCK_SIZE"  >> $USERDATA_FAKEROOT_SCRIPT
 		else
-			echo "$MKIMAGE $USER_DATA_DIR $ROCKDEV/userdata.img $USERDATA_FS_TYPE"  >> $USERDATA_FAKEROOT_SCRIPT
+			echo "$MKIMAGE $USER_DATA_DIR $ROCKDEV/userdata.img $IMX_USERDATA_FS_TYPE"  >> $USERDATA_FAKEROOT_SCRIPT
 		fi
 		chmod a+x $USERDATA_FAKEROOT_SCRIPT
 		$FAKEROOT_TOOL -- $USERDATA_FAKEROOT_SCRIPT
@@ -273,7 +273,7 @@ else
         echo -e "\e[31m error: $UBOOT_IMG not found! \e[0m"
 fi
 
-if [ "$UBOOT_FORMAT_TYPE" = "fit" ]; then
+if [ "$IMX_UBOOT_FORMAT_TYPE" = "fit" ]; then
         rm -f $ROCKDEV/trust.img
         echo "uboot fotmat type is fit, so ignore trust.img..."
 else
@@ -311,7 +311,7 @@ fi
 #	rm $SPINOR_LOADER_PATH 2>/dev/null
 #fi
 
-if [ $BOOT_IMG ]
+if [ $IMX_BOOT_IMG ]
 then
 	if [ -f $BOOT_IMG ]
 	then
@@ -323,7 +323,7 @@ then
 	fi
 fi
 
-if [ $CFG_RAMBOOT ]
+if [ $IMX_CFG_RAMBOOT ]
 then
 	if [ -f $RAMBOOT_IMG ]
 	then
@@ -335,7 +335,7 @@ then
 	fi
 fi
 
-if [ "$RAMDISK_SECURITY_BOOTUP" = "true" ];then
+if [ "$IMX_RAMDISK_SECURITY_BOOTUP" = "true" ];then
 	if [ -f $TOP_DIR/u-boot/boot.img ]
 	then
 	        echo -n "Enable ramdisk security bootup, create boot.img..."

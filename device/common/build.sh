@@ -415,7 +415,8 @@ function build_uboot(){
 	echo "========================================="
 
 	cd uboot
-	./make.sh imx6ull
+
+	./make.sh mx6ull_fcc_emmc
 	cd -
 	
 	finish_build
