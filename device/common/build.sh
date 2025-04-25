@@ -417,6 +417,7 @@ function build_uboot(){
 	cd uboot
 
 	./make.sh mx6ull_fcc_emmc
+
 	cd -
 	
 	finish_build
@@ -463,23 +464,24 @@ function build_kernel(){
 
 	cd kernel
 	make ARCH=$IMX_ARCH $IMX_KERNEL_DEFCONFIG $IMX_KERNEL_DEFCONFIG_FRAGMENT
-	make ARCH=$IMX_ARCH $IMX_KERNEL_DTS.img -j$IMX_JOBS
+    make ARCH=$IMX_ARCH all -j$IMX_JOBS
+	# make ARCH=$IMX_ARCH $IMX_KERNEL_DTS.img -j$IMX_JOBS
 	if [ -f "$TOP_DIR/device/$IMX_TARGET_PRODUCT/$IMX_KERNEL_FIT_ITS" ]; then
 		$COMMON_DIR/mk-fitimage.sh $TOP_DIR/kernel/$IMX_BOOT_IMG \
 			$TOP_DIR/device/$IMX_TARGET_PRODUCT/$IMX_KERNEL_FIT_ITS
 	fi
 
 
-	echo -e "\t\n\n === Sign Boot.img === \n\n"
-	cd zlg
-	./sign-apply-imx6ull.sh || exit 1
-	cp fit/boot-signed.img ../boot.img 
-	cd -
-	cp zlg/fit/boot-signed.img boot.img
+	# echo -e "\t\n\n === Sign Boot.img === \n\n"
+	# cd zlg
+	# ./sign-apply-imx6ull.sh || exit 1
+	# cp fit/boot-signed.img ../boot.img 
+	# cd -
+	# cp zlg/fit/boot-signed.img boot.img
 
-	echo -e "\t\n === Sign End === \n\n"
+	# echo -e "\t\n === Sign End === \n\n"
 
-	build_check_power_domain
+	# build_check_power_domain
 
 	finish_build
 }
@@ -581,7 +583,14 @@ function build_rootfs(){
 
 	ln -rsf $IMX_ROOTFS_DIR/$ROOTFS_IMG $IMX_ROOTFS_IMG
 
-	cp buildroot/output/alientek_imx6ull/images/rootfs.ext2 /mnt/hgfs/share/rootfs.img
+	cp buildroot/output/alientek_imx6ull/images/rootfs.tar ../../nfs/rootfs/rootfs.tar
+
+    cd ../../nfs/rootfs
+
+    tar -xf rootfs.tar
+
+    rm rootfs.tar
+    # cp buildroot/output/alientek_imx6ull/images/rootfs.ext2 /mnt/hgfs/share/rootfs.img
 	finish_build
 }
 

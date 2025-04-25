@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Target arch
-export IMX_ARCH=arm64
+export IMX_ARCH=arm
 # Uboot defconfig
 export IMX_UBOOT_DEFCONFIG=mx6ull_fcc_emmc
 # Uboot image format type: fit(flattened image tree)
