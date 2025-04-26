@@ -465,6 +465,11 @@ function build_kernel(){
 	cd kernel
 	make ARCH=$IMX_ARCH $IMX_KERNEL_DEFCONFIG $IMX_KERNEL_DEFCONFIG_FRAGMENT
     make ARCH=$IMX_ARCH all -j$IMX_JOBS
+
+    cp arch/arm/boot/dts/imx6ull-fcc-emmc.dtb /root/linux/tftpboot/imx6ull-fcc-emmc.dtb
+
+    cp arch/arm/boot/zImage /root/linux/tftpboot/zImage
+    
 	# make ARCH=$IMX_ARCH $IMX_KERNEL_DTS.img -j$IMX_JOBS
 	if [ -f "$TOP_DIR/device/$IMX_TARGET_PRODUCT/$IMX_KERNEL_FIT_ITS" ]; then
 		$COMMON_DIR/mk-fitimage.sh $TOP_DIR/kernel/$IMX_BOOT_IMG \
