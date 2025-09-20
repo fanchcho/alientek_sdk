@@ -1,12 +1,12 @@
 [submodule "kernel"]
 	path = kernel
-	url = http://gogs.freevegan.site/linux/linux_5.4.70_2.3.0.git
+	url = git@github.com:fanchcho/linux_5.4.70_2.3.0.git
 	branch = main
 [submodule "uboot"]
 	path = uboot
-	url = http://gogs.freevegan.site/linux/uboot_5.4.70_2.3.0.git
+	url = git@github.com:fanchcho/uboot_5.4.70_2.3.0.git
 	branch = main
 [submodule "buildroot"]
 	path = buildroot
-	url = http://gogs.freevegan.site/linux/buildroot-2022.08.1.git
+	url = git@github.com:fanchcho/buildroot-2022.08.1.git
 	branch = main
